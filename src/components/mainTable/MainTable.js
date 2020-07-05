@@ -19,6 +19,11 @@ import {
   Tooltip,
   FormControlLabel,
   Switch,
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  ExpandMoreIcon,
+  CircularProgress,
 } from '@material-ui/core';
 
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -69,10 +74,10 @@ const headCells = [
     label: 'New deaths',
   },
   {
-    id: 'recovery',
+    id: 'newRecovery',
     numeric: true,
     disablePadding: false,
-    label: 'Recovery',
+    label: 'New recovery',
   },
   { id: 'newCases', numeric: true, disablePadding: false, label: 'New cases' },
   {
@@ -82,10 +87,10 @@ const headCells = [
     label: 'Total cases',
   },
   {
-    id: 'percentOfCountry',
+    id: 'percentOfDeaths',
     numeric: true,
     disablePadding: false,
-    label: 'Percent of country',
+    label: 'Percent of deaths',
   },
 ];
 
@@ -99,8 +104,9 @@ function EnhancedTableHead(props) {
     rowCount,
     onRequestSort,
   } = props;
+
   const createSortHandler = (property) => (event) => {
-    // console.log(property, event);
+    console.log(property);
     onRequestSort(event, property);
   };
 
@@ -145,7 +151,7 @@ EnhancedTableHead.propTypes = {
   classes: PropTypes.object.isRequired,
   numSelected: PropTypes.number.isRequired,
   onRequestSort: PropTypes.func.isRequired,
-  onSelectAllClick: PropTypes.func.isRequired,
+  // onSelectAllClick: PropTypes.func.isRequired,
   order: PropTypes.oneOf(['asc', 'desc']).isRequired,
   orderBy: PropTypes.string.isRequired,
   rowCount: PropTypes.number.isRequired,
@@ -201,7 +207,8 @@ const EnhancedTableToolbar = (props) => {
         </Typography>
       )}
 
-      {numSelected > 0 ? (
+      {/* Ikona filtrowania w headerze tabeli */}
+      {/* {numSelected > 0 ? (
         <Tooltip title="Delete">
           <IconButton aria-label="delete">
             <DeleteIcon />
@@ -213,7 +220,7 @@ const EnhancedTableToolbar = (props) => {
             <FilterListIcon />
           </IconButton>
         </Tooltip>
-      )}
+      )} */}
     </Toolbar>
   );
 };
@@ -251,20 +258,15 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function EnhancedTable() {
-  const fetchCovidApi = () => {
-    return fetch('https://covid-193.p.rapidapi.com/statistics', {
-      method: 'GET',
-      headers: {
-        'x-rapidapi-host': 'covid-193.p.rapidapi.com',
-        'x-rapidapi-key': 'facd1d48d1msha66ccd9e537aa4bp1352f7jsn7725c615b5a5',
-      },
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        setCovidAPI(data.response);
-        // console.log(data.response[0]);
-      })
+  const requestOptions = {
+    method: 'GET',
+    redirect: 'follow',
+  };
 
+  const fetchCovidApi = () => {
+    return fetch('https://api.covid19api.com/summary', requestOptions)
+      .then((response) => response.json())
+      .then((data) => setCovidAPICountries(data.Countries))
       .catch((err) => {
         console.log(err);
       });
@@ -277,7 +279,8 @@ export default function EnhancedTable() {
   const [page, setPage] = React.useState(0);
   const [dense, setDense] = React.useState(false);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
-  const [covidAPI, setCovidAPI] = React.useState([]);
+  const [covidAPICountries, setCovidAPICountries] = React.useState([]);
+
   React.useEffect(() => {
     fetchCovidApi();
   }, []);
@@ -335,7 +338,8 @@ export default function EnhancedTable() {
   const isSelected = (name) => selected.indexOf(name) !== -1;
 
   const emptyRows =
-    rowsPerPage - Math.min(rowsPerPage, covidAPI.length - page * rowsPerPage);
+    rowsPerPage -
+    Math.min(rowsPerPage, covidAPICountries.length - page * rowsPerPage);
 
   return (
     <div className={classes.root}>
@@ -355,14 +359,16 @@ export default function EnhancedTable() {
               orderBy={orderBy}
               //   onSelectAllClick={handleSelectAllClick}
               onRequestSort={handleRequestSort}
-              rowCount={covidAPI.length}
+              rowCount={covidAPICountries.length}
             />
             <TableBody>
-              {stableSort(covidAPI, getComparator(order, orderBy))
+              {stableSort(covidAPICountries, getComparator(order, orderBy))
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((item, index) => {
                   const isItemSelected = isSelected(item.name);
                   const labelId = `enhanced-table-checkbox-${index}`;
+                  const countryPercentOfDeath =
+                    (item.TotalDeaths / item.TotalConfirmed) * 100;
 
                   return (
                     <TableRow
@@ -371,7 +377,7 @@ export default function EnhancedTable() {
                       role="checkbox"
                       aria-checked={isItemSelected}
                       tabIndex={-1}
-                      key={item.country}
+                      key={item.Country}
                       selected={isItemSelected}
                     >
                       <TableCell padding="checkbox">
@@ -386,16 +392,16 @@ export default function EnhancedTable() {
                         scope="row"
                         padding="none"
                       >
-                        {item.country}
+                        {item.Country}
                       </TableCell>
-                      <TableCell align="right">{item.deaths.total}</TableCell>
-                      <TableCell align="right">{item.deaths.new}</TableCell>
+                      <TableCell align="right">{item.TotalDeaths}</TableCell>
+                      <TableCell align="right">+{item.NewDeaths}</TableCell>
+                      <TableCell align="right">+{item.NewRecovered}</TableCell>
+                      <TableCell align="right">+{item.NewConfirmed}</TableCell>
+                      <TableCell align="right">{item.TotalConfirmed}</TableCell>
                       <TableCell align="right">
-                        {item.cases.recovered}
+                        {countryPercentOfDeath.toFixed(2)} %
                       </TableCell>
-                      <TableCell align="right">{item.cases.new}</TableCell>
-                      <TableCell align="right">{item.cases.total}</TableCell>
-                      <TableCell align="right">2.32%</TableCell>
                     </TableRow>
                   );
                 })}
@@ -410,7 +416,7 @@ export default function EnhancedTable() {
         <TablePagination
           rowsPerPageOptions={[5, 10, 25]}
           component="div"
-          count={covidAPI.length}
+          count={covidAPICountries.length}
           rowsPerPage={rowsPerPage}
           page={page}
           onChangePage={handleChangePage}
