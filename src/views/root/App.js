@@ -1,68 +1,76 @@
 import React from 'react';
 import './App.css';
+import Countries from '../../components/countries/Countries';
+import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
-import Fab from '@material-ui/core/Fab';
-import NavigationIcon from '@material-ui/icons/Navigation';
-import MainTable from '../../../src/components/mainTable/MainTable';
-import Cards from '../../components/cards/Cards';
-import AppBar from '../../components/appBar/AppBar';
+import BottomNavigation from '@material-ui/core/BottomNavigation';
+import BottomNavigationAction from '@material-ui/core/BottomNavigationAction';
+import LocationOnIcon from '@material-ui/icons/LocationOn';
+import HomeIcon from '@material-ui/icons/Home';
+import PublicIcon from '@material-ui/icons/Public';
+import Home from '../../components/home/Home';
+import MyLocation from '../../components/myLocation/MyLocation';
+import GitHubIcon from '@material-ui/icons/GitHub';
 
 const useStyles = makeStyles({
   root: {
-    maxWidth: 1200,
-    margin: '50px auto 0',
-    display: 'flex',
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'flex-start',
-    alignItems: 'flex-end',
+    width: '100%',
+    margin: '0 auto',
+    position: 'fixed',
+    bottom: 0,
+    left: 0,
   },
 });
 
 function App() {
-  const [covidAPIGlobal, setCovidAPIGlobal] = React.useState([]);
-  React.useEffect(() => {
-    fetchCovidApi();
-    console.log(covidAPIGlobal);
-  }, []);
-
   const classes = useStyles();
-  const requestOptions = {
-    method: 'GET',
-    redirect: 'follow',
+  const [value, setValue] = React.useState('recents');
+
+  const handleChange = (event, newValue) => {
+    console.log(newValue);
+    setValue(newValue);
   };
-
-  const fetchCovidApi = () => {
-    return fetch('https://api.covid19api.com/summary', requestOptions)
-      .then((response) => response.json())
-      .then((data) => {
-        setCovidAPIGlobal(data.Global);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
-
-  const percentOfDeaths = `${
-    (covidAPIGlobal.TotalDeaths / covidAPIGlobal.TotalConfirmed) * 100
-  }`;
-
   return (
-    <>
-      <AppBar />
-      <section className={classes.root}>
-        <Cards
-          covidAPIGlobal={covidAPIGlobal}
-          percentOfDeaths={percentOfDeaths}
-        />
-        <Cards />
-        <Fab variant="extended">
-          <NavigationIcon color="primary" />
-          Find me
-        </Fab>
-      </section>
-      <MainTable />
-    </>
+    <Router>
+      <Switch>
+        <Route path="/countries">
+          <Countries />
+        </Route>
+        <Route path="/mylocation">
+          <MyLocation />
+        </Route>
+        <Route exact path="/">
+          <Home />
+        </Route>
+      </Switch>
+
+      <BottomNavigation
+        value={value}
+        onChange={(event, newValue) => {
+          setValue(newValue);
+        }}
+        showLabels
+        className={classes.root}
+      >
+        <Link to="/">
+          <BottomNavigationAction label="Home" showLabel icon={<HomeIcon />} />
+        </Link>
+        <Link to="/countries">
+          <BottomNavigationAction
+            label="Countries"
+            showLabel
+            icon={<PublicIcon />}
+          />
+        </Link>
+        <Link to="/mylocation">
+          <BottomNavigationAction
+            label="My location"
+            showLabel
+            icon={<LocationOnIcon />}
+          />
+        </Link>
+      </BottomNavigation>
+    </Router>
   );
 }
 
