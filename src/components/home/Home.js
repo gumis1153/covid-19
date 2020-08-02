@@ -6,7 +6,7 @@ export default function Home() {
   return (
     <div className={style.root}>
       <div>
-        <h1>COVID-19 Stats</h1>
+        <h1>COVID-19 Stats - work in progress</h1>
         <h3>Check what's going on in world</h3>
         <ul>
           <li>List of countries with basic stats</li>

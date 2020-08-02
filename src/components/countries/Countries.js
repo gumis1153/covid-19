@@ -13,13 +13,15 @@ import TableSortLabel from '@material-ui/core/TableSortLabel';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
-import Checkbox from '@material-ui/core/Checkbox';
-import IconButton from '@material-ui/core/IconButton';
-import Tooltip from '@material-ui/core/Tooltip';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Switch from '@material-ui/core/Switch';
-import DeleteIcon from '@material-ui/icons/Delete';
-import FilterListIcon from '@material-ui/icons/FilterList';
+import Modal from '../../components/modal/Modal';
+// import Checkbox from '@material-ui/core/Checkbox';
+// import IconButton from '@material-ui/core/IconButton';
+// import Tooltip from '@material-ui/core/Tooltip';
+// import FormControlLabel from '@material-ui/core/FormControlLabel';
+// import Switch from '@material-ui/core/Switch';
+// import DeleteIcon from '@material-ui/icons/Delete';
+// import FilterListIcon from '@material-ui/icons/FilterList';
+import style from './countries.module.scss';
 
 function createData(name, calories, fat, carbs, protein) {
   return { name, calories, fat, carbs, protein };
@@ -98,12 +100,12 @@ const headCells = [
     disablePadding: false,
     label: 'Total Deaths',
   },
-  {
-    id: 'PercentOfDeaths',
-    numeric: true,
-    disablePadding: false,
-    label: 'Percent of deaths',
-  },
+  // {
+  //   id: 'PercentOfDeaths',
+  //   numeric: true,
+  //   disablePadding: false,
+  //   label: 'Percent of deaths',
+  // },
 ];
 
 function EnhancedTableHead(props) {
@@ -285,10 +287,20 @@ export default function EnhancedTable() {
   const [dense, setDense] = React.useState(false);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const [countriesCovidApi, setCountriesCovidApi] = React.useState([]);
+  const [isModalOpen, setIsModalOpen] = React.useState(true);
+  const [modalCountry, setModalCountry] = React.useState('');
+
+  // const setPercentOfDeaths = () => {
+  //   countriesCovidApi.forEach((country) => {
+  //     country.percentOfDeaths =
+  //       (country.TotalDeaths / country.TotalConfirmed) * 100;
+  //     console.log(country.percentOfDeaths);
+  //   });
+  // };
 
   // POBIERANIE API
-  function getCovidCountryApi() {
-    var requestOptions = {
+  const getCovidCountryApi = () => {
+    const requestOptions = {
       method: 'GET',
       redirect: 'follow',
     };
@@ -297,10 +309,10 @@ export default function EnhancedTable() {
       .then((response) => response.json())
       .then((result) => {
         setCountriesCovidApi(result.Countries);
-        // console.log(countriesCovidApi);
+        // setPercentOfDeaths();
       })
       .catch((error) => console.log('error', error));
-  }
+  };
 
   React.useEffect(() => {
     getCovidCountryApi();
@@ -321,24 +333,33 @@ export default function EnhancedTable() {
     setSelected([]);
   };
 
-  const handleClick = (event, name) => {
-    // Dodaj wyświetlanie konkretnego państwa w modalu
-    console.log(event, name);
-    const selectedIndex = selected.indexOf(name);
-    let newSelected = [];
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
 
-    if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, name);
-    } else if (selectedIndex === 0) {
-      newSelected = newSelected.concat(selected.slice(1));
-    } else if (selectedIndex === selected.length - 1) {
-      newSelected = newSelected.concat(selected.slice(0, -1));
-    } else if (selectedIndex > 0) {
-      newSelected = newSelected.concat(
-        selected.slice(0, selectedIndex),
-        selected.slice(selectedIndex + 1)
-      );
-    }
+  const handleClick = (event, name) => {
+    setModalCountry(name);
+
+    setIsModalOpen(true);
+
+    // Dodaj wyświetlanie konkretnego państwa w modalu
+    // console.log(event, name);
+
+    // const selectedIndex = selected.indexOf(name);
+    // let newSelected = [];
+
+    // if (selectedIndex === -1) {
+    //   newSelected = newSelected.concat(selected, name);
+    // } else if (selectedIndex === 0) {
+    //   newSelected = newSelected.concat(selected.slice(1));
+    // } else if (selectedIndex === selected.length - 1) {
+    //   newSelected = newSelected.concat(selected.slice(0, -1));
+    // } else if (selectedIndex > 0) {
+    //   newSelected = newSelected.concat(
+    //     selected.slice(0, selectedIndex),
+    //     selected.slice(selectedIndex + 1)
+    //   );
+    // }
 
     // setSelected(newSelected);
   };
@@ -356,17 +377,11 @@ export default function EnhancedTable() {
     setDense(event.target.checked);
   };
 
-  const isSelected = (name) => selected.indexOf(name) !== -1;
+  // const isSelected = (name) => selected.indexOf(name) !== -1;
 
   const emptyRows =
     rowsPerPage -
     Math.min(rowsPerPage, countriesCovidApi.length - page * rowsPerPage);
-
-  const setPercentOfDeaths = () => {
-    countriesCovidApi.forEach((index) => {
-      console.log(index);
-    });
-  };
 
   return (
     <div className={classes.root}>
@@ -510,8 +525,8 @@ export default function EnhancedTable() {
           transform="translate(-11.69692 -13.01074)"
           fill="none"
           stroke="#6c63ff"
-          stroke-miterlimit="10"
-          stroke-width="2"
+          strokeMiterlimit="10"
+          strokeWidth="2"
           opacity="0.8"
         />
         <path
@@ -519,8 +534,8 @@ export default function EnhancedTable() {
           transform="translate(-11.69692 -13.01074)"
           fill="none"
           stroke="#6c63ff"
-          stroke-miterlimit="10"
-          stroke-width="2"
+          strokeMiterlimit="10"
+          strokeWidth="2"
           opacity="0.8"
         />
         <circle cx="214.07353" cy="310.64667" r="11.96804" fill="#6c63ff" />
@@ -530,6 +545,9 @@ export default function EnhancedTable() {
         <circle cx="600.35225" cy="480.67534" r="11.96804" fill="#6c63ff" />
       </svg>
       <Paper className={classes.paper}>
+        {isModalOpen ? (
+          <Modal modalCountry={modalCountry} closeModal={closeModal} />
+        ) : null}
         <EnhancedTableToolbar numSelected={selected.length} />
         <TableContainer>
           <Table
@@ -551,18 +569,19 @@ export default function EnhancedTable() {
               {stableSort(countriesCovidApi, getComparator(order, orderBy))
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((country, index) => {
-                  const isItemSelected = isSelected(country.Country);
+                  // const isItemSelected = isSelected(country.Country);
                   const labelId = `enhanced-table-checkbox-${index}`;
 
                   return (
                     <TableRow
+                      className={style.rowhover}
                       hover
                       onClick={(event) => handleClick(event, country.Country)}
                       role="checkbox"
-                      aria-checked={isItemSelected}
+                      // aria-checked={isItemSelected}
                       tabIndex={-1}
                       key={country.Country}
-                      selected={isItemSelected}
+                      // selected={isItemSelected}
                     >
                       <TableCell padding="checkbox">
                         {/* <Checkbox

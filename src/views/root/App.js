@@ -33,13 +33,13 @@ function App() {
   return (
     <Router>
       <Switch>
-        <Route path="/countries">
+        <Route path="/covid-19/countries">
           <Countries />
         </Route>
-        <Route path="/mylocation">
+        <Route path="/covid-19/mylocation">
           <MyLocation />
         </Route>
-        <Route exact path="/">
+        <Route exact path="/covid-19/">
           <Home />
         </Route>
       </Switch>
@@ -52,17 +52,17 @@ function App() {
         showLabels
         className={classes.root}
       >
-        <Link to="/">
+        <Link to="/covid-19">
           <BottomNavigationAction label="Home" showLabel icon={<HomeIcon />} />
         </Link>
-        <Link to="/countries">
+        <Link to="/covid-19/countries">
           <BottomNavigationAction
             label="Countries"
             showLabel
             icon={<PublicIcon />}
           />
         </Link>
-        <Link to="/mylocation">
+        <Link to="/covid-19/mylocation">
           <BottomNavigationAction
             label="My location"
             showLabel

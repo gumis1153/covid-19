@@ -1,8 +1,7 @@
 {
-    "name": "",
-    "short_name": "",
-    "icons": [
-        {
+    "name": "COVID-19 Stats",
+    "short_name": "COVID-19 Stats",
+    "icons": [{
             "src": "/android-chrome-192x192.png",
             "sizes": "192x192",
             "type": "image/png"
