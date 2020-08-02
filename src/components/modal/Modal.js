@@ -35,7 +35,6 @@ const useStyles = makeStyles({
 export default function SimpleCard(props) {
   // console.log(props);
   const classes = useStyles();
-  const [countryApi, setCountryApi] = React.useState([]);
 
   const requestOptions = {
     method: 'GET',
@@ -43,51 +42,61 @@ export default function SimpleCard(props) {
   };
 
   const getCountryApi = () => {
-    // fetch(
-    //   `https://api.covid19api.com/country/${
-    //     props.modalCountry
-    //   }?from=2020-03-01T00:00:00Z&to=${new Date()}
-    //     `,
-    //   requestOptions
-    // )
     fetch(
-      `https://api.covid19api.com/country/Afghanistan?from=2020-03-01T00:00:00Z&to=${new Date()}
+      `https://api.covid19api.com/country/${
+        props.modalCountry
+      }?from=2020-03-01T00:00:00Z&to=${new Date()}
         `,
       requestOptions
     )
+      // fetch(
+      //   `https://api.covid19api.com/country/Afghanistan?from=2020-03-01T00:00:00Z&to=${new Date()}
+      //     `,
+      //   requestOptions
+      // )
       .then((response) => response.json())
       .then((result) => {
-        // setCountryApi(result);
         createChart(result);
       })
       .catch((error) => console.log('error', error));
   };
 
   const createChart = (data) => {
-    console.log(data);
-    var ctx = document.getElementById('myChart');
-    var myChart = new Chart(ctx, {
+    // console.log(data);
+    let totalActiveAsix = [];
+    let totalConfirmedAsix = [];
+    let totalDeathsAsix = [];
+    let labels = [];
+
+    data.forEach((item) => {
+      totalActiveAsix.push(item.Active);
+      totalConfirmedAsix.push(item.Confirmed);
+      totalDeathsAsix.push(item.Deaths);
+      labels.push(item.Date.slice(0, -10));
+    });
+
+    new Chart(document.getElementById('myChart'), {
       type: 'line',
       data: {
-        labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+        labels: labels,
         datasets: [
           {
             label: 'Total active',
-            data: [12, 19, 3, 5, 2, 3],
+            data: totalActiveAsix,
             backgroundColor: ['transparent'],
             borderColor: ['#6C63FF'],
-            borderWidth: 1,
+            borderWidth: 2,
           },
           {
             label: 'Total confirmed',
-            data: [3, 192, 3, 5, 22, 3],
+            data: totalConfirmedAsix,
             backgroundColor: ['transparent'],
             borderColor: ['#3F3D56'],
             borderWidth: 2,
           },
           {
             label: 'Total deaths',
-            data: [3, 22, 5, 3, 22, 3],
+            data: totalDeathsAsix,
             backgroundColor: ['transparent'],
             borderColor: ['rgba(255, 99, 132, 1)'],
             borderWidth: 2,
@@ -117,7 +126,6 @@ export default function SimpleCard(props) {
       <CardContent>
         <Typography variant="h5" component="h5">
           {props.modalCountry}
-          Afghanistan
         </Typography>
         <div className={style.chartContainer}>
           <canvas id="myChart"></canvas>

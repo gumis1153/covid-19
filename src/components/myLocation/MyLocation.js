@@ -1,8 +1,8 @@
 import React from 'react';
-import style from './myLocation.module.scss';
+// import style from './myLocation.module.scss';
 
 export default function () {
-  const [currentLocation, setCurrentLocation] = React.useState([]);
+  // const [currentLocation, setCurrentLocation] = React.useState([]);
 
   // const getCurrentLocation = () => {
   //   let latitude = 0;

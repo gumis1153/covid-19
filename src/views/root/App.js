@@ -10,7 +10,6 @@ import HomeIcon from '@material-ui/icons/Home';
 import PublicIcon from '@material-ui/icons/Public';
 import Home from '../../components/home/Home';
 import MyLocation from '../../components/myLocation/MyLocation';
-import GitHubIcon from '@material-ui/icons/GitHub';
 
 const useStyles = makeStyles({
   root: {
@@ -26,10 +25,11 @@ function App() {
   const classes = useStyles();
   const [value, setValue] = React.useState('recents');
 
-  const handleChange = (event, newValue) => {
-    console.log(newValue);
-    setValue(newValue);
-  };
+  // const handleChange = (event, newValue) => {
+  //   console.log(newValue);
+  //   setValue(newValue);
+  // };
+
   return (
     <Router>
       <Switch>
@@ -49,26 +49,30 @@ function App() {
         onChange={(event, newValue) => {
           setValue(newValue);
         }}
-        showLabels
+        // showLabels={false}
         className={classes.root}
       >
         <Link to="/covid-19">
-          <BottomNavigationAction label="Home" showLabel icon={<HomeIcon />} />
+          <BottomNavigationAction
+            label="Home"
+            showLabel={false}
+            icon={<HomeIcon />}
+          />
         </Link>
         <Link to="/covid-19/countries">
           <BottomNavigationAction
             label="Countries"
-            showLabel
+            showLabel={false}
             icon={<PublicIcon />}
           />
         </Link>
-        <Link to="/covid-19/mylocation">
+        {/* <Link to="/covid-19/mylocation">
           <BottomNavigationAction
             label="My location"
-            showLabel
+            showLabel={false}
             icon={<LocationOnIcon />}
           />
-        </Link>
+        </Link> */}
       </BottomNavigation>
     </Router>
   );
