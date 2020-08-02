@@ -14,7 +14,7 @@ const useStyles = makeStyles({
     top: '0%',
     left: '50%',
     transform: 'translateX(-50%)',
-    width: '80%',
+    width: '70%',
     height: 750,
     margin: '0 auto',
     zIndex: 2,
