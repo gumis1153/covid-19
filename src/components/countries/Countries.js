@@ -14,6 +14,7 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
 import Modal from '../../components/modal/Modal';
+import TextField from '@material-ui/core/TextField';
 // import SearchIcon from '@material-ui/icons/Search';
 import InputBase from '@material-ui/core/InputBase';
 // import Checkbox from '@material-ui/core/Checkbox';
@@ -86,12 +87,6 @@ const headCells = [
     disablePadding: false,
     label: 'Total Deaths',
   },
-  // {
-  //   id: 'PercentOfDeaths',
-  //   numeric: true,
-  //   disablePadding: false,
-  //   label: 'Percent of deaths',
-  // },
 ];
 
 function EnhancedTableHead(props) {
@@ -312,18 +307,11 @@ export default function EnhancedTable() {
   // const [dense, setDense] = React.useState(false);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const [countriesCovidApi, setCountriesCovidApi] = React.useState([]);
+  const [countriesList, setCountriesList] = React.useState([]);
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   const [modalCountry, setModalCountry] = React.useState('');
+  const [searchedCountry, setSearchedCountry] = React.useState([]);
 
-  // const setPercentOfDeaths = () => {
-  //   countriesCovidApi.forEach((country) => {
-  //     country.percentOfDeaths =
-  //       (country.TotalDeaths / country.TotalConfirmed) * 100;
-  //     console.log(country.percentOfDeaths);
-  //   });
-  // };
-
-  // POBIERANIE API
   const getCovidCountryApi = () => {
     const requestOptions = {
       method: 'GET',
@@ -334,7 +322,7 @@ export default function EnhancedTable() {
       .then((response) => response.json())
       .then((result) => {
         setCountriesCovidApi(result.Countries);
-        // setPercentOfDeaths();
+        setCountriesList(result.Countries);
       })
       .catch((error) => console.log('error', error));
   };
@@ -342,14 +330,6 @@ export default function EnhancedTable() {
   React.useEffect(() => {
     getCovidCountryApi();
   }, []);
-
-  const handleSearchCountry = (e) => {
-    countriesCovidApi.find((item, index) => {
-      // console.log(item.Country);
-      // console.log(index);
-    });
-    // console.log(e.target.value);
-  };
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -359,7 +339,7 @@ export default function EnhancedTable() {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = countriesCovidApi.map((n) => n.Country);
+      const newSelecteds = countriesList.map((n) => n.Country);
       setSelected(newSelecteds);
       return;
     }
@@ -384,15 +364,23 @@ export default function EnhancedTable() {
     setPage(0);
   };
 
-  // const handleChangeDense = (event) => {
-  //   setDense(event.target.checked);
-  // };
+  // searching a country
+  const handleSearchCountry = (event) => {
+    const { value } = event.target;
+    let validCountries = [];
+    setSearchedCountry(value);
+    setCountriesList([]);
 
-  // const isSelected = (name) => selected.indexOf(name) !== -1;
+    countriesCovidApi.forEach((country) => {
+      const searchedValue =
+        country.Country.toLowerCase().search(value.toLowerCase()) !== -1;
 
-  // const emptyRows =
-  //   rowsPerPage -
-  //   Math.min(rowsPerPage, countriesCovidApi.length - page * rowsPerPage);
+      if (searchedValue) {
+        validCountries.push(country);
+        setCountriesList(validCountries);
+      }
+    });
+  };
 
   return (
     <div className={classes.root}>
@@ -565,15 +553,11 @@ export default function EnhancedTable() {
             {/* <div className={classes.searchIcon}>
           <SearchIcon />
         </div> */}
-            <InputBase
-              placeholder="Search…"
-              disabled
-              classes={{
-                root: classes.inputRoot,
-                input: classes.inputInput,
-              }}
-              inputProps={{ 'aria-label': 'search' }}
+            <TextField
+              id="standard-basic"
+              label="Search..."
               onChange={handleSearchCountry}
+              value={searchedCountry}
             />
           </div>
           <Table
@@ -589,11 +573,11 @@ export default function EnhancedTable() {
               orderBy={orderBy}
               onSelectAllClick={handleSelectAllClick}
               onRequestSort={handleRequestSort}
-              rowCount={countriesCovidApi.length}
+              rowCount={countriesList.length}
             />
 
             <TableBody>
-              {stableSort(countriesCovidApi, getComparator(order, orderBy))
+              {stableSort(countriesList, getComparator(order, orderBy))
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((country, index) => {
                   // const isItemSelected = isSelected(country.Country);
@@ -646,7 +630,7 @@ export default function EnhancedTable() {
         <TablePagination
           rowsPerPageOptions={[5, 10, 25]}
           component="div"
-          count={countriesCovidApi.length}
+          count={countriesList.length}
           rowsPerPage={rowsPerPage}
           page={page}
           onChangePage={handleChangePage}

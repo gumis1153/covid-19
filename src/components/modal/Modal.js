@@ -7,14 +7,16 @@ import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import Chart from 'chart.js';
 import style from './modal.module.scss';
+import Select from '../../components/select/Select';
+import moment from 'moment';
 
 const useStyles = makeStyles({
   root: {
-    position: 'absolute',
-    top: '0%',
+    position: 'fixed',
+    top: '50%',
     left: '50%',
-    transform: 'translateX(-50%)',
-    width: '70%',
+    transform: 'translate(-50%, -50%)',
+    width: '80%',
     height: 750,
     margin: '0 auto',
     zIndex: 2,
@@ -35,38 +37,62 @@ const useStyles = makeStyles({
 export default function SimpleCard(props) {
   // console.log(props);
   const classes = useStyles();
+  const [countryName, setCountryName] = React.useState('');
+  // const [interval, setInterval] = React.useState('');
 
   const requestOptions = {
     method: 'GET',
     redirect: 'follow',
   };
+  // console.log(new Date().)
+  const getCountryApi = (interval) => {
+    let now = moment().format('YYYY-MM-DD');
+    let lastMonth = moment().subtract(1, 'months').format('YYYY-MM-DD');
+    let lastWeek = moment().subtract(1, 'weeks').format('YYYY-MM-DD');
 
-  const getCountryApi = () => {
-    fetch(
-      `https://api.covid19api.com/country/${
-        props.modalCountry
-      }?from=2020-03-01T00:00:00Z&to=${new Date()}
+    if (interval === 'month') {
+      fetch(
+        `https://api.covid19api.com/country/${props.modalCountry}?from=${lastMonth}&to=${now}
+          `,
+        requestOptions
+      )
+        .then((response) => response.json())
+        .then((result) => {
+          createChart(result);
+        })
+        .catch((error) => console.log('error', error));
+    } else if (interval === 'week') {
+      fetch(
+        `https://api.covid19api.com/country/${props.modalCountry}?from=${lastWeek}&to=${now}
         `,
-      requestOptions
-    )
-      // fetch(
-      //   `https://api.covid19api.com/country/Afghanistan?from=2020-03-01T00:00:00Z&to=${new Date()}
-      //     `,
-      //   requestOptions
-      // )
-      .then((response) => response.json())
-      .then((result) => {
-        createChart(result);
-      })
-      .catch((error) => console.log('error', error));
+        requestOptions
+      )
+        .then((response) => response.json())
+        .then((result) => {
+          createChart(result);
+        })
+        .catch((error) => console.log('error', error));
+    } else {
+      fetch(
+        `https://api.covid19api.com/country/${props.modalCountry}?from=2020-03-01T00:00:00Z&to=${now}
+      `,
+        requestOptions
+      )
+        .then((response) => response.json())
+        .then((result) => {
+          createChart(result);
+        })
+        .catch((error) => console.log('error', error));
+    }
   };
 
   const createChart = (data) => {
-    // console.log(data);
+    // console.log(data[0].Country);
     let totalActiveAsix = [];
     let totalConfirmedAsix = [];
     let totalDeathsAsix = [];
     let labels = [];
+    setCountryName(data[0].Country);
 
     data.forEach((item) => {
       totalActiveAsix.push(item.Active);
@@ -117,6 +143,11 @@ export default function SimpleCard(props) {
     });
   };
 
+  const setTimeInterval = (interval) => {
+    // setInterval(interval);
+    getCountryApi(interval);
+  };
+
   React.useEffect(() => {
     getCountryApi();
   }, []);
@@ -125,8 +156,9 @@ export default function SimpleCard(props) {
     <Card className={classes.root}>
       <CardContent>
         <Typography variant="h5" component="h5">
-          {props.modalCountry}
+          {countryName}
         </Typography>
+        <Select className={style.select} setTimeInterval={setTimeInterval} />
         <div className={style.chartContainer}>
           <canvas id="myChart"></canvas>
         </div>
