@@ -1,5 +1,9 @@
 .chartContainer {
-    width: 90%;
+    width: 80%;
     margin: 0 auto;
     z-index: 3;
+
+    canvas {
+        width: 100%;
+    }
 }
