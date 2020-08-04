@@ -16,10 +16,13 @@ const useStyles = makeStyles({
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    width: '80%',
-    minHeight: 750,
+    width: '100%',
+    height: '100vh',
+    // minHeight: 750,
     margin: '0 auto',
     zIndex: 2,
+    display: 'grid',
+    gridTemplateColumns: 'repeat(2, 1fr)',
   },
   bullet: {
     display: 'inline-block',
@@ -38,7 +41,10 @@ export default function SimpleCard(props) {
   // console.log(props);
   const classes = useStyles();
   const [countryName, setCountryName] = React.useState('');
+  const [countryInfo, setCountryInfo] = React.useState([]);
   // const [interval, setInterval] = React.useState('');
+
+  // console.log(props);
 
   const requestOptions = {
     method: 'GET',
@@ -49,6 +55,24 @@ export default function SimpleCard(props) {
     let now = moment().format('YYYY-MM-DD');
     let lastMonth = moment().subtract(1, 'months').format('YYYY-MM-DD');
     let lastWeek = moment().subtract(1, 'weeks').format('YYYY-MM-DD');
+
+    fetch(
+      `https://api.covid19api.com/summary
+        `,
+      requestOptions
+    )
+      .then((response) => response.json())
+      .then((result) => {
+        result.Countries.forEach((country) => {
+          if (country.Slug === props.modalCountry) {
+            setCountryInfo(country);
+            console.log(country);
+          }
+        });
+        // setCountryInfo(result);
+        // console.log(result.Countries);
+      })
+      .catch((error) => console.log('error', error));
 
     if (interval === 'month') {
       fetch(
@@ -130,6 +154,7 @@ export default function SimpleCard(props) {
         ],
       },
       options: {
+        events: ['onHover'],
         scales: {
           yAxes: [
             {
@@ -154,20 +179,32 @@ export default function SimpleCard(props) {
 
   return (
     <Card className={classes.root}>
-      <CardContent>
-        <Typography variant="h5" component="h5">
-          {countryName}
-        </Typography>
-        <Select className={style.select} setTimeInterval={setTimeInterval} />
-        <div className={style.chartContainer}>
-          <canvas id="myChart"></canvas>
-        </div>
-      </CardContent>
-      <CardActions>
-        <Button size="small" onClick={props.closeModal}>
-          Close
-        </Button>
-      </CardActions>
+      <div className={style.container}>
+        <CardContent>
+          <Typography variant="h5" component="h5">
+            {countryName}
+          </Typography>
+          <Select className={style.select} setTimeInterval={setTimeInterval} />
+          <div className={style.chartContainer}>
+            <canvas id="myChart"></canvas>
+          </div>
+        </CardContent>
+        <CardActions>
+          <Button size="small" onClick={props.closeModal}>
+            Close
+          </Button>
+        </CardActions>
+      </div>
+      <div className={style.container}>
+        <ul>
+          <li>{`Total confirmed: ${countryInfo.TotalConfirmed}`}</li>
+          <li>{`New confirmed: +${countryInfo.NewConfirmed}`}</li>
+          <li>{`Total deaths: ${countryInfo.TotalDeaths}`}</li>
+          <li>{`New deaths: +${countryInfo.NewDeaths}`}</li>
+          <li>{`Total recovered: ${countryInfo.TotalRecovered}`}</li>
+          <li>{`New Recovered: +${countryInfo.NewRecovered}`}</li>
+        </ul>
+      </div>
     </Card>
   );
 }

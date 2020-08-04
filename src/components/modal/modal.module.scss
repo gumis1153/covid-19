@@ -1,9 +1,17 @@
-.chartContainer {
-    width: 80%;
+.container {
+  grid-column: span 1;
+
+  ul {
+    margin-top: 150px;
+  }
+
+  .chartContainer {
+    width: 90%;
     margin: 0 auto;
     z-index: 3;
 
     canvas {
-        width: 100%;
+      width: 100%;
     }
+  }
 }

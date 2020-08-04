@@ -2,7 +2,7 @@
   "name": "covid-19",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://piotrjakubowski.pl/covid-19/",
+  "homepage": "https://piotrjakubowski.pl/covid-19",
   "dependencies": {
     "@material-ui/core": "^4.10.2",
     "@material-ui/icons": "^4.9.1",
