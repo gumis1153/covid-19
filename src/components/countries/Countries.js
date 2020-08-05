@@ -210,6 +210,10 @@ EnhancedTableToolbar.propTypes = {
 const useStyles = makeStyles((theme) => ({
   root: {
     width: '80%',
+    [theme.breakpoints.down('sm')]: {
+      marginLeft: theme.spacing(3),
+      width: '95%',
+    },
     margin: '0 auto 100px',
     zIndex: 1,
   },

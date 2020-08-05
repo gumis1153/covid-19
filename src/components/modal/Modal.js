@@ -9,20 +9,26 @@ import Chart from 'chart.js';
 import style from './modal.module.scss';
 import Select from '../../components/select/Select';
 import moment from 'moment';
+import numeral from 'numeral';
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
   root: {
     position: 'fixed',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: '100%',
+    top: '0%',
+    left: '48%',
+    transform: 'translate(-50%, -0%)',
+    width: '80vw',
+    [theme.breakpoints.down('lg')]: {
+      marginLeft: theme.spacing(3),
+      width: '95vw',
+    },
     height: '100vh',
     // minHeight: 750,
     margin: '0 auto',
     zIndex: 2,
     display: 'grid',
-    gridTemplateColumns: 'repeat(2, 1fr)',
+    // gridTemplateColumns: 'repeat(2, 1fr)',
+    gridTemplateRows: 'repeat(2, auto)',
   },
   bullet: {
     display: 'inline-block',
@@ -35,7 +41,20 @@ const useStyles = makeStyles({
   pos: {
     marginBottom: 12,
   },
-});
+  canvas: {
+    height: '60%',
+  },
+  info: {
+    display: 'flex',
+    justifyContent: 'flex-start',
+  },
+  select: {
+    margin: '0 0',
+  },
+  h5: {
+    marginTop: '26px',
+  },
+}));
 
 export default function SimpleCard(props) {
   // console.log(props);
@@ -180,30 +199,60 @@ export default function SimpleCard(props) {
   return (
     <Card className={classes.root}>
       <div className={style.container}>
-        <CardContent>
-          <Typography variant="h5" component="h5">
+        <CardContent className={classes.info}>
+          <Typography className={classes.h5} variant="h5" component="h5">
             {countryName}
           </Typography>
-          <Select className={style.select} setTimeInterval={setTimeInterval} />
-          <div className={style.chartContainer}>
-            <canvas id="myChart"></canvas>
-          </div>
+          <Select
+            className={classes.select}
+            setTimeInterval={setTimeInterval}
+          />
         </CardContent>
-        <CardActions>
-          <Button size="small" onClick={props.closeModal}>
+        <div className={style.options}>
+          <Button variant="outlined" size="medium" onClick={props.closeModal}>
             Close
           </Button>
-        </CardActions>
+        </div>
+        {/* <CardActions> */}
+        {/* </CardActions> */}
       </div>
-      <div className={style.container}>
-        <ul>
-          <li>{`Total confirmed: ${countryInfo.TotalConfirmed}`}</li>
-          <li>{`New confirmed: +${countryInfo.NewConfirmed}`}</li>
-          <li>{`Total deaths: ${countryInfo.TotalDeaths}`}</li>
-          <li>{`New deaths: +${countryInfo.NewDeaths}`}</li>
-          <li>{`Total recovered: ${countryInfo.TotalRecovered}`}</li>
-          <li>{`New Recovered: +${countryInfo.NewRecovered}`}</li>
-        </ul>
+      <div className={style.chartContainer}>
+        <canvas id="myChart" className={classes.canvas}></canvas>
+      </div>
+      <div className={style.containerSmall}>
+        <div>
+          <h5>Total confirmed:</h5>
+          <h4>{numeral(countryInfo.TotalConfirmed).format(0.0)}</h4>
+        </div>
+        <div>
+          <h5>New confirmed:</h5>
+          <h4>
+            {countryInfo.NewConfirmed > 0 ? '+' : null}
+            {numeral(countryInfo.NewConfirmed).format(0.0)}
+          </h4>
+        </div>
+        <div>
+          <h5>Total deaths:</h5>
+          <h4>{numeral(countryInfo.TotalDeaths).format(0.0)}</h4>
+        </div>
+        <div>
+          <h5>New deaths:</h5>
+          <h4>
+            {countryInfo.NewDeaths > 0 ? '+' : null}
+            {numeral(countryInfo.NewDeaths).format(0.0)}
+          </h4>
+        </div>
+        <div>
+          <h5>Total recovered</h5>
+          <h4>{numeral(countryInfo.TotalRecovered).format(0.0)}</h4>
+        </div>
+        <div>
+          <h5>New Recovered:</h5>
+          <h4>
+            {countryInfo.NewRecovered > 0 ? '+' : null}
+            {numeral(countryInfo.NewRecovered).format(0.0)}
+          </h4>
+        </div>
       </div>
     </Card>
   );

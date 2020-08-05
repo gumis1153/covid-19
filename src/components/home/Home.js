@@ -1,6 +1,7 @@
 import React from 'react';
 import style from './home.module.scss';
 import Paper from '@material-ui/core/Paper';
+import numeral from 'numeral';
 // import { Divider } from '@material-ui/core';
 
 export default function Home() {
@@ -37,17 +38,19 @@ export default function Home() {
           <li>Check COVID in your location</li>
         </ul>
       </div>
+      <div className={style.data}>
+        <h2>World</h2>
+        {worldData.map(({ TotalConfirmed, TotalDeaths, TotalRecovered }) => (
+          <>
+            <h5>Total confirmed:</h5>
+            <h4>{numeral(TotalConfirmed).format(0.0)}</h4>
+            <h5>Total death:</h5> <h4>{numeral(TotalDeaths).format(0.0)}</h4>
+            <h5>Total recovery:</h5>
+            <h4>{numeral(TotalRecovered).format(0.0)}</h4>
+          </>
+        ))}
+      </div>
       <div className={style.container}>
-        <h1>World</h1>
-        <ul>
-          {worldData.map(({ TotalConfirmed, TotalDeaths, TotalRecovered }) => (
-            <>
-              <li>Total confirmed: {TotalConfirmed}</li>
-              <li>Total death: {TotalDeaths}</li>
-              <li>Total recovery: {TotalRecovered}</li>
-            </>
-          ))}
-        </ul>
         <svg
           id="fc98b6f9-21a0-4a6d-bd35-cd8a18cd4eab"
           data-name="Layer 1"

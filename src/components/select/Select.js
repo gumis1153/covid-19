@@ -16,8 +16,9 @@ const useStyles = makeStyles((theme) => ({
     minWidth: 150,
   },
   select: {
-    width: 120,
-    margin: '0 auto 20px',
+    marginLeft: '20px',
+    // width: 120,
+    // margin: '0 auto 20px',
   },
 }));
 
