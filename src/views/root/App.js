@@ -55,14 +55,14 @@ function App() {
         <Link to="/covid-19">
           <BottomNavigationAction
             label="Home"
-            showLabel={false}
+            showLabel={true}
             icon={<HomeIcon />}
           />
         </Link>
         <Link to="/covid-19/countries">
           <BottomNavigationAction
             label="Countries"
-            showLabel={false}
+            showLabel={true}
             icon={<PublicIcon />}
           />
         </Link>

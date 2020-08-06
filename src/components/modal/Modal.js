@@ -15,7 +15,7 @@ const useStyles = makeStyles((theme) => ({
   root: {
     position: 'fixed',
     top: '0%',
-    left: '48%',
+    left: '50%',
     transform: 'translate(-50%, -0%)',
     width: '80vw',
     [theme.breakpoints.down('lg')]: {
@@ -72,7 +72,7 @@ export default function SimpleCard(props) {
   // console.log(new Date().)
   const getCountryApi = (interval) => {
     let now = moment().format('YYYY-MM-DD');
-    let lastMonth = moment().subtract(1, 'months').format('YYYY-MM-DD');
+    let lastThreeMonths = moment().subtract(3, 'months').format('YYYY-MM-DD');
     let lastWeek = moment().subtract(1, 'weeks').format('YYYY-MM-DD');
 
     fetch(
@@ -93,9 +93,9 @@ export default function SimpleCard(props) {
       })
       .catch((error) => console.log('error', error));
 
-    if (interval === 'month') {
+    if (interval === 'months') {
       fetch(
-        `https://api.covid19api.com/country/${props.modalCountry}?from=${lastMonth}&to=${now}
+        `https://api.covid19api.com/country/${props.modalCountry}?from=${lastThreeMonths}&to=${now}
           `,
         requestOptions
       )
@@ -187,6 +187,10 @@ export default function SimpleCard(props) {
     });
   };
 
+  const getPercent = (TotalConfirmed, TotalDeaths) => {
+    return TotalDeaths / TotalConfirmed;
+  };
+
   const setTimeInterval = (interval) => {
     // setInterval(interval);
     getCountryApi(interval);
@@ -251,6 +255,22 @@ export default function SimpleCard(props) {
           <h4>
             {countryInfo.NewRecovered > 0 ? '+' : null}
             {numeral(countryInfo.NewRecovered).format(0.0)}
+          </h4>
+        </div>
+        <div>
+          <h5>Mortality:</h5>
+          <h4>
+            {numeral(
+              getPercent(countryInfo.TotalConfirmed, countryInfo.TotalDeaths)
+            ).format('0.000%')}
+          </h4>
+        </div>
+        <div>
+          <h5>Percent of recovered:</h5>
+          <h4>
+            {numeral(
+              getPercent(countryInfo.TotalConfirmed, countryInfo.TotalRecovered)
+            ).format('0.000%')}
           </h4>
         </div>
       </div>

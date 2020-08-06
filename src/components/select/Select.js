@@ -58,7 +58,7 @@ export default function ControlledOpenSelect(props) {
           onChange={handleChange}
         >
           <MenuItem value="begin">From begining</MenuItem>
-          <MenuItem value="month">Last month</MenuItem>
+          <MenuItem value="months">Last three months</MenuItem>
           <MenuItem value="week">Last week</MenuItem>
         </Select>
       </FormControl>
